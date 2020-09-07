@@ -1,0 +1,48 @@
+@hostname = localhost
+@port = 4040
+@protocol = http
+@host = {{protocol}}://{{hostname}}:{{port}}
+@contentType = application/json
+@createdAt = {{$datetime iso8601}}
+@modifiedBy = {{$processEnv USERNAME}}
+
+###
+GET {{host}}
+
+###
+# ping api
+# response : { "msg": "pong", "code": 200, "data" : [], "total": 0, "size":0, "page": 1 }
+GET {{host}}/api/pub/v1/ping
+
+###
+GET {{host}}/api/pri/v1/ping
+
+###
+# ping v2 api handling of error
+# response : { "msg": "pong", "code": 200, "data" : [], "total": 0, "size":0, "page": 1 }
+GET {{host}}/api/pub/v2/ping
+###
+# @name login
+POST {{host}}/api/pub/v1/login
+Content-Type: application/x-www-form-urlencoded
+
+user=vivekyadav.jit@gmail.com
+&pass=abc123
+###
+@token = {{login.response.body.token}}
+GET {{host}}/api/pri/v1/ping
+Authorization: Bearer {{token}}
+
+###
+@token = {{login.response.body.token}}
+POST {{host}}/api/pri/v1/user
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "email":"vivekyadav.jit@gmail.com", 
+    "mobile":"8105237870",
+    "password":"abc123"
+}
+
+
